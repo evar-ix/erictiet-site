@@ -6,9 +6,9 @@
   --muted: #858585;
   --selection: rgb(23 23 23 / 12%);
   /* The only colour on the site — the flowers. */
-  --bloom-deep: #8f1d1d;
-  --bloom: #d62b2b;
-  --bloom-pale: #ff7a6b;
+  --bloom-deep: #5b2a86;
+  --bloom: #8248b8;
+  --bloom-pale: #b48ad9;
   --stem: #3f8f4a;
 
   --measure: 36rem;
@@ -22,9 +22,9 @@
     --foreground: #ededed;
     --muted: #b8b8b8;
     --selection: rgb(255 255 255 / 16%);
-    --bloom-deep: #c92a2a;
-    --bloom: #ff4d4d;
-    --bloom-pale: #ff9a8c;
+    --bloom-deep: #9a62d6;
+    --bloom: #b383e6;
+    --bloom-pale: #d4b4f5;
     --stem: #5fbf6a;
   }
 }
@@ -152,7 +152,7 @@ li::before { content: "\2022"; }
 }
 
 /* Intro — the mark draws itself, holds, then recedes into the distance as the
-   veil fades to reveal the page. Pure CSS; one 3.2s timeline shared by both. */
+   veil fades to reveal the page. Pure CSS; one 1.7s timeline shared by both. */
 .intro {
   position: fixed;
   inset: 0;
@@ -161,7 +161,7 @@ li::before { content: "\2022"; }
   place-items: center;
   background: var(--background);
   pointer-events: none;
-  animation: intro-veil 3.2s ease-in-out forwards;
+  animation: intro-veil 1.7s ease-in-out forwards;
 }
 
 .intro-mark {
@@ -171,29 +171,29 @@ li::before { content: "\2022"; }
   stroke: var(--foreground);
   stroke-width: 5.5;
   stroke-linecap: round;
-  animation: intro-recede 3.2s cubic-bezier(0.55, 0, 0.25, 1) forwards;
+  animation: intro-recede 1.7s cubic-bezier(0.55, 0, 0.25, 1) forwards;
 }
 
 .intro-mark path {
   stroke-dasharray: 1 1;
   stroke-dashoffset: 1;
-  animation: intro-draw 0.9s ease-out forwards;
+  animation: intro-draw 0.5s ease-out forwards;
 }
-.intro-mark path:nth-child(2) { animation-delay: 0.12s; }
-.intro-mark path:nth-child(3) { animation-delay: 0.24s; }
-.intro-mark path:nth-child(4) { animation-delay: 0.36s; }
+.intro-mark path:nth-child(2) { animation-delay: 0.07s; }
+.intro-mark path:nth-child(3) { animation-delay: 0.14s; }
+.intro-mark path:nth-child(4) { animation-delay: 0.21s; }
 
 @keyframes intro-draw {
   to { stroke-dashoffset: 0; }
 }
 
 @keyframes intro-recede {
-  0%, 59% { transform: perspective(700px) translateZ(0); opacity: 1; }
+  0%, 50% { transform: perspective(700px) translateZ(0); opacity: 1; }
   100% { transform: perspective(700px) translateZ(-1300px); opacity: 0; }
 }
 
 @keyframes intro-veil {
-  0%, 59% { opacity: 1; visibility: visible; }
+  0%, 50% { opacity: 1; visibility: visible; }
   100% { opacity: 0; visibility: hidden; }
 }
 
@@ -201,17 +201,22 @@ li::before { content: "\2022"; }
   .intro { display: none; }
 }
 
-/* Corner mark — the logo settles into the top-left as the intro clears. */
+/* Brand mark — the logo sits to the left of the name and fades in as the
+   intro clears. Inline, so it behaves on narrow screens too. */
+.brand {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .mark {
-  position: fixed;
-  top: 1.25rem;
-  left: 1.25rem;
-  z-index: 2;
   display: block;
-  width: 1.9rem;
+  flex: none;
+  width: 1.5rem;
   color: var(--foreground);
   opacity: 0;
-  animation: mark-in 0.7s ease-out 2.7s forwards;
+  animation: mark-in 0.45s ease-out 1.35s forwards;
 }
 
 .mark svg {
@@ -220,21 +225,31 @@ li::before { content: "\2022"; }
   height: auto;
   fill: none;
   stroke: currentColor;
-  stroke-width: 8;
+  stroke-width: 9;
   stroke-linecap: round;
 }
 
 @keyframes mark-in {
   from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 0.85; transform: scale(1); }
+  to { opacity: 0.9; transform: scale(1); }
 }
 
 .mark:hover { opacity: 1; }
 
+/* Wide screens: the logo stays pinned to the top-left corner of the window,
+   out of the name's row. Phones keep it inline, to the left of the name. */
 @media (min-width: 40rem) {
-  .mark { top: 1.75rem; left: 1.75rem; }
+  .mark {
+    position: fixed;
+    top: 1.75rem;
+    left: 1.75rem;
+    z-index: 2;
+    width: 1.9rem;
+  }
+
+  .mark svg { stroke-width: 8; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mark { animation: none; opacity: 0.85; }
+  .mark { animation: none; opacity: 0.9; }
 }
