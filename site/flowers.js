@@ -218,6 +218,7 @@
   function draw(time) {
     chars.fill(" ");
     tones.fill("");
+    const narrow = cols < 100; // phones: fixed bend, small sway on top
 
     // Back flower (wide screens only): upper left, smaller and faint, its bare scape sweeping up
     // from the bottom-left corner.
@@ -237,7 +238,7 @@
       const L = Math.max(6, Math.min(cols * (cols < 100 ? 0.17 : 0.125), rows * aspect * 0.27));
       const hy = Math.max(rows * 0.66, L * 1.25 + 3);
       const headX = Math.max(cols * 0.5, cols - L * 2.5 - 3); // outer flowers almost touch the right edge
-      const [hx, y] = stem(Math.min(cols - 6, headX + cols * 0.1), headX, hy, 3, -6, 0.65, 2.4, time, "s", true);
+      const [hx, y] = stem(Math.min(cols - 6, headX + cols * (narrow ? 0.24 : 0.1)), headX, hy, narrow ? 2.5 : 3, narrow ? -1.5 : -6, 0.65, 2.4, time, "s", true);
       umbel(hx, y, L, time, {
         fan: [-72, -36, 0, 36, 72], stemTone: "s", lean: (hx - headX) * 0.012,
         tones: { deep: "d", mid: "m", pale: "p" },
