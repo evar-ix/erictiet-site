@@ -11,13 +11,19 @@
   if (!host || !host.parentElement) return;
   const box = host.parentElement;
 
-  const FPS = 20;
+  const FPS = 60;
   const SPEED = 0.45; // global time scale; lower is calmer
   const RAD = Math.PI / 180;
+  const TONES = ["s", "d", "m", "p", "bs", "bd", "bm", "bp"];
+  const canvas = document.createElement("canvas");
+  canvas.style.cssText = "position:absolute;left:0;top:0;width:100%;height:100%";
+  const ctx = canvas.getContext("2d");
+  box.appendChild(canvas);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let cols = 0, rows = 0, aspect = 2;
   let chars = [], tones = [];
+  let cell = { w: 6, h: 12, font: "11px monospace" }, palette = {};
   let last = 0, t = 0;
 
   function measure() {
@@ -35,6 +41,27 @@
     rows = Math.max(8, Math.ceil(box.clientHeight / line));
     chars = new Array(cols * rows);
     tones = new Array(cols * rows);
+    cell = { w: glyphW, h: line, font: getComputedStyle(host).font };
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(box.clientWidth * dpr);
+    canvas.height = Math.round(box.clientHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    readPalette();
+  }
+
+  // Colour and opacity per tone come from the stylesheet (.garden .s, .m, ...),
+  // so light/dark theming stays in CSS.
+  function readPalette() {
+    palette = {};
+    for (const name of TONES) {
+      const probe = document.createElement("i");
+      probe.className = name;
+      probe.style.display = "none";
+      box.appendChild(probe);
+      const cs = getComputedStyle(probe);
+      palette[name] = { color: cs.color, alpha: parseFloat(cs.opacity) };
+      probe.remove();
+    }
   }
 
   function put(x, y, ch, tone) {
@@ -217,27 +244,29 @@
       });
     }
 
-    let out = "";
-    for (let y = 0; y < rows; y++) {
-      let run = "", cur = null;
-      for (let x = 0; x < cols; x++) {
-        const i = y * cols + x;
-        const tone = tones[i];
-        if (tone !== cur) {
-          if (run) out += cur ? `<i class="${cur}">${run}</i>` : run;
-          run = ""; cur = tone;
-        }
-        run += chars[i];
-      }
-      if (run) out += cur ? `<i class="${cur}">${run}</i>` : run;
-      out += "\n";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = cell.font;
+    ctx.textBaseline = "middle";
+    const byTone = {};
+    for (let i = 0; i < chars.length; i++) {
+      const tone = tones[i];
+      if (tone && chars[i] !== " ") (byTone[tone] || (byTone[tone] = [])).push(i);
     }
-    host.innerHTML = out;
+    for (const tone of TONES) {
+      const cells = byTone[tone];
+      if (!cells) continue;
+      ctx.fillStyle = palette[tone].color;
+      ctx.globalAlpha = palette[tone].alpha;
+      for (const i of cells) {
+        ctx.fillText(chars[i], (i % cols) * cell.w, (Math.floor(i / cols) + 0.5) * cell.h);
+      }
+    }
+    ctx.globalAlpha = 1;
   }
 
   function frame(now) {
     requestAnimationFrame(frame);
-    if (now - last < 1000 / FPS) return;
+    if (now - last < 1000 / FPS - 2) return;
     last = now;
     t = (now / 1000) * SPEED;
     draw(t);
@@ -249,6 +278,7 @@
     resizeTimer = setTimeout(() => { measure(); draw(t); }, 120);
   });
 
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { readPalette(); draw(t); });
   measure();
   draw(0);
   if (!reduced) requestAnimationFrame(frame);

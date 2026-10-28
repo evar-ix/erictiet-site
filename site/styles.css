@@ -120,6 +120,9 @@ li::before { content: "\2022"; }
   line-height: 1.1;
   white-space: pre;
   user-select: none;
+  /* Only used to measure glyph metrics; flowers.js paints to a canvas. */
+  visibility: hidden;
+  position: absolute;
 }
 
 .garden i { font-style: normal; }
@@ -146,4 +149,92 @@ li::before { content: "\2022"; }
 
 @media (prefers-reduced-motion: reduce) {
   a { transition: none; }
+}
+
+/* Intro — the mark draws itself, holds, then recedes into the distance as the
+   veil fades to reveal the page. Pure CSS; one 3.2s timeline shared by both. */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: var(--background);
+  pointer-events: none;
+  animation: intro-veil 3.2s ease-in-out forwards;
+}
+
+.intro-mark {
+  width: min(46vmin, 340px);
+  height: auto;
+  fill: none;
+  stroke: var(--foreground);
+  stroke-width: 5.5;
+  stroke-linecap: round;
+  animation: intro-recede 3.2s cubic-bezier(0.55, 0, 0.25, 1) forwards;
+}
+
+.intro-mark path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation: intro-draw 0.9s ease-out forwards;
+}
+.intro-mark path:nth-child(2) { animation-delay: 0.12s; }
+.intro-mark path:nth-child(3) { animation-delay: 0.24s; }
+.intro-mark path:nth-child(4) { animation-delay: 0.36s; }
+
+@keyframes intro-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes intro-recede {
+  0%, 59% { transform: perspective(700px) translateZ(0); opacity: 1; }
+  100% { transform: perspective(700px) translateZ(-1300px); opacity: 0; }
+}
+
+@keyframes intro-veil {
+  0%, 59% { opacity: 1; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+}
+
+/* Corner mark — the logo settles into the top-left as the intro clears. */
+.mark {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 2;
+  display: block;
+  width: 1.9rem;
+  color: var(--foreground);
+  opacity: 0;
+  animation: mark-in 0.7s ease-out 2.7s forwards;
+}
+
+.mark svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+@keyframes mark-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 0.85; transform: scale(1); }
+}
+
+.mark:hover { opacity: 1; }
+
+@media (min-width: 40rem) {
+  .mark { top: 1.75rem; left: 1.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark { animation: none; opacity: 0.85; }
 }
