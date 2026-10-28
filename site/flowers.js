@@ -219,10 +219,10 @@
     chars.fill(" ");
     tones.fill("");
 
-    // Back flower: upper left, smaller and faint, its bare scape sweeping up
+    // Back flower (wide screens only): upper left, smaller and faint, its bare scape sweeping up
     // from the bottom-left corner.
-    {
-      const L = Math.max(10, Math.min(cols * 0.055, rows * aspect * 0.12));
+    if (cols >= 100) {
+      const L = Math.max(4, Math.min(cols * (cols < 100 ? 0.08 : 0.055), rows * aspect * 0.12));
       const hy = Math.max(rows * 0.58, L + 3);
       const [hx, y] = stem(cols * 0.04, cols * 0.2, hy, -2, 4, 0.8, 0.6, time, "bs", false);
       umbel(hx, y, L, time, {
@@ -234,7 +234,7 @@
     // Front flower: big, centre-right, an umbel of five on a bare thick scape
     // rising from the bottom right.
     {
-      const L = Math.max(16, Math.min(cols * 0.125, rows * aspect * 0.27));
+      const L = Math.max(6, Math.min(cols * (cols < 100 ? 0.17 : 0.125), rows * aspect * 0.27));
       const hy = Math.max(rows * 0.66, L * 1.25 + 3);
       const headX = Math.max(cols * 0.5, cols - L * 2.5 - 3); // outer flowers almost touch the right edge
       const [hx, y] = stem(Math.min(cols - 6, headX + cols * 0.1), headX, hy, 3, -6, 0.65, 2.4, time, "s", true);
