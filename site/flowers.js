@@ -154,7 +154,7 @@
     // Outer flowers first so the middle one sits in front.
     ks.sort((a, b) => Math.abs(b.deg) - Math.abs(a.deg));
     for (const { deg, k } of ks) {
-      const beta = deg * RAD + Math.sin(time * 0.5 + k * 1.7) * 0.04;
+      const beta = deg * RAD + o.lean + Math.sin(time * 0.5 + k * 1.7) * 0.04;
       const ped = L * (0.95 + 0.5 * Math.cos(beta));
       const fx = hx + Math.sin(beta) * ped;
       const fy = hy - (Math.cos(beta) * ped) / aspect;
@@ -175,7 +175,8 @@
     for (let k = 0; k <= steps; k++) {
       const u = k / steps;
       const x = baseX + (headX - baseX) * u + bow * Math.sin(u * Math.PI) +
-        sway * u * u * Math.sin(time * freq + phase + u * 1.3);
+        sway * u * u * (Math.sin(time * freq + phase + u * 1.3) +
+          0.5 * Math.sin(time * freq * 0.43 + phase * 1.7 + u)); // slow gust on top of the sway
       const y = base - u * (base - headY);
       const ch = dirChar(x - px, -1);
       if (k > 0) {
@@ -196,9 +197,9 @@
     {
       const L = Math.max(10, Math.min(cols * 0.055, rows * aspect * 0.12));
       const hy = Math.max(rows * 0.58, L + 3);
-      const [hx, y] = stem(cols * 0.04, cols * 0.2, hy, -2, 2, 0.8, 0.6, time, "bs", false);
+      const [hx, y] = stem(cols * 0.04, cols * 0.2, hy, -2, 4, 0.8, 0.6, time, "bs", false);
       umbel(hx, y, L, time, {
-        fan: [-55, -18, 18, 55], stemTone: "bs",
+        fan: [-55, -18, 18, 55], stemTone: "bs", lean: (hx - cols * 0.2) * 0.012,
         tones: { deep: "bd", mid: "bm", pale: "bp" },
       });
     }
@@ -209,9 +210,9 @@
       const L = Math.max(16, Math.min(cols * 0.125, rows * aspect * 0.27));
       const hy = Math.max(rows * 0.66, L * 1.25 + 3);
       const headX = Math.max(cols * 0.5, cols - L * 2.5 - 3); // outer flowers almost touch the right edge
-      const [hx, y] = stem(Math.min(cols - 6, headX + cols * 0.1), headX, hy, 3, -2, 0.65, 2.4, time, "s", true);
+      const [hx, y] = stem(Math.min(cols - 6, headX + cols * 0.1), headX, hy, 3, -6, 0.65, 2.4, time, "s", true);
       umbel(hx, y, L, time, {
-        fan: [-72, -36, 0, 36, 72], stemTone: "s",
+        fan: [-72, -36, 0, 36, 72], stemTone: "s", lean: (hx - headX) * 0.012,
         tones: { deep: "d", mid: "m", pale: "p" },
       });
     }
