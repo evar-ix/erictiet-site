@@ -1,0 +1,149 @@
+:root {
+  color-scheme: light dark;
+
+  --background: #fafafa;
+  --foreground: #171717;
+  --muted: #858585;
+  --selection: rgb(23 23 23 / 12%);
+  /* The only colour on the site — the flowers. */
+  --bloom-deep: #8f1d1d;
+  --bloom: #d62b2b;
+  --bloom-pale: #ff7a6b;
+  --stem: #3f8f4a;
+
+  --measure: 36rem;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --muted: #b8b8b8;
+    --selection: rgb(255 255 255 / 16%);
+    --bloom-deep: #c92a2a;
+    --bloom: #ff4d4d;
+    --bloom-pale: #ff9a8c;
+    --stem: #5fbf6a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--background); overscroll-behavior-y: none; }
+
+body {
+  min-width: 320px;
+  min-height: 100svh;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.45;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--selection); }
+
+main {
+  position: relative;
+  z-index: 1;
+  width: min(100%, var(--measure));
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+a {
+  color: var(--muted);
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: color 140ms ease;
+}
+a:hover { color: var(--foreground); }
+a:focus-visible { color: var(--foreground); border-radius: 2px; outline: 2px solid var(--foreground); outline-offset: 3px; }
+
+.identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  row-gap: 0.6rem;
+}
+
+h1 {
+  flex: none;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+nav { display: flex; flex: 1 0 auto; gap: 0.45rem; min-width: max-content; }
+nav a { flex: none; font-size: 0.88rem; }
+nav a:first-child { margin-left: auto; }
+
+.about { margin-top: 2.5rem; }
+
+ul {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  list-style: none;
+}
+li { display: grid; grid-template-columns: 0.8rem minmax(0, 1fr); }
+li::before { content: "\2022"; }
+
+/* Flower garden — decorative ASCII animation, drawn by flowers.js. Sits in
+   the bottom half of the viewport, behind the copy. */
+.garden {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70vh;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.garden pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.1;
+  white-space: pre;
+  user-select: none;
+}
+
+.garden i { font-style: normal; }
+.garden .s { color: var(--stem); opacity: 0.65; }
+.garden .d { color: var(--bloom-deep); opacity: 0.85; }
+.garden .m { color: var(--bloom); opacity: 0.75; }
+.garden .p { color: var(--bloom-pale); opacity: 0.8; }
+/* Back flower: same hues, pushed further into the distance. */
+.garden .bs { color: var(--stem); opacity: 0.3; }
+.garden .bd { color: var(--bloom-deep); opacity: 0.42; }
+.garden .bm { color: var(--bloom); opacity: 0.34; }
+.garden .bp { color: var(--bloom-pale); opacity: 0.38; }
+
+@media (max-width: 22rem) {
+  nav { flex-basis: 100%; }
+  nav a:first-child { margin-left: 0; }
+}
+
+@media (min-width: 40rem) {
+  main { padding: 4rem 1.5rem; }
+  .identity { column-gap: 1.5rem; }
+  nav { gap: 0.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a { transition: none; }
+}
